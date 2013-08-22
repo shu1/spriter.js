@@ -128,19 +128,6 @@ spriter.tween = function (a, b, t)
  */
 spriter.tweenAngle = function (a, b, t, spin)
 {
-	//alert("a"+a);
-	/*var rad = a * Math.PI / 180;
-	//var rc = Math.cos(rad)
-	var rs = Math.sin(rad);
-	a = (Math.asin(rs)*180)/Math.PI;*/
-
-	/*alert("b"+b);
-	var rad2 = b * Math.PI / 180;
-	//var rc = Math.cos(rad)
-	var rs2 = Math.sin(rad2);
-
-	b = (Math.asin(rs2)*180)/Math.PI;
-	alert("b"+b);*/
     var change_spin = false;
 	while (a < 0)
 	{
@@ -901,13 +888,13 @@ spriter.data.prototype.prepareImages = function (url, inc_count, dec_count)
  * @param {string} url
  * @param {function()} callback
  */
-spriter.data.prototype.loadFromURL = function (url, callback)
+spriter.data.prototype.loadFromURL = function (url, callback, object)
 {
 	var that = this;
 
 	var count = 0;
 	var inc_count = function () { count++; }
-	var dec_count = function () { if (--count == 0) { callback(); } }
+	var dec_count = function () { if (--count == 0) { callback(object); } }
 
 	inc_count(); // url
 
@@ -1712,3 +1699,75 @@ spriter.pose.prototype.strike = function ()
 	}
 }
 
+
+//we get the AABB of the object
+/**
+ * @return {object} 
+ * @param {spriter.pose} pose 
+ * @param {object=} extent 
+ */
+var get_pose_extent = function (pose, extent)
+{
+	extent = extent || { min: { x: 1, y: 1 }, max: { x: -1, y: -1 } };
+
+	var bound = function (v)
+	{
+		if (extent.min.x > extent.max.x)
+		{
+			extent.min.x = extent.max.x = v.x;
+			extent.min.y = extent.max.y = v.y;
+		}
+		else
+		{
+			extent.min.x = Math.min(extent.min.x, v.x);
+			extent.max.x = Math.max(extent.max.x, v.x);
+			extent.min.y = Math.min(extent.min.y, v.y);
+			extent.max.y = Math.max(extent.max.y, v.y);
+		}
+	}
+
+	var mtx = new fo.m3x2();
+	var ll = new fo.v2(-1, -1);
+	var lr = new fo.v2( 1, -1);
+	var ul = new fo.v2(-1,  1);
+	var ur = new fo.v2( 1,  1);
+	var tv = new fo.v2(0, 0);
+
+	pose.strike();
+
+	if (pose.m_data && pose.m_data.folder_array)
+	{
+		var folder_array = pose.m_data.folder_array;
+		var object_array = pose.m_tweened_object_array;
+		for (var object_idx = 0, object_len = object_array.length; object_idx < object_len; ++object_idx)
+		{
+			var object = object_array[object_idx];
+			var folder = folder_array[object.folder];
+			var file = folder.file_array[object.file];
+
+			mtx.makeIdentity();
+
+			// apply object transform
+			mtx.selfTranslate(object.x, object.y);
+			mtx.selfRotateDegrees(object.angle);
+			mtx.selfScale(object.scale_x, object.scale_y);
+
+			// image extents
+			var ex = 0.5 * file.width;
+			var ey = 0.5 * file.height;
+			mtx.selfScale(ex, ey);
+
+			// local pivot in unit (-1 to +1) coordinates
+			var lpx = (object.pivot_x * 2) - 1;
+			var lpy = (object.pivot_y * 2) - 1;
+			mtx.selfTranslate(-lpx, -lpy);
+
+			bound(mtx.applyVector(ul, tv));
+			bound(mtx.applyVector(ur, tv));
+			bound(mtx.applyVector(lr, tv));
+			bound(mtx.applyVector(ll, tv));
+		}
+	}
+
+	return extent;
+}
