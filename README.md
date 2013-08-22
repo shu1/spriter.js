@@ -3,4 +3,5 @@ spriter.js
 
 A JavaScript API for the Spriter SCML animation data format.
 
-<a href="http://flyovergames.com/spriter.js/">flyovergames.com/spriter.js</a>
+Demo
+<a href="http://zaxuhe.com/spriter/">http://zaxuhe.com/spriter/</a>

@@ -79,10 +79,11 @@ var main = function ()
 
 	info_div.innerHTML = "Animation Name: ";
 
+	//We load spriter animation
 	var pose = new spriter.pose();
 
-	//var url = "test/test.scml";
-	var url = "rapido/rapido.scml";
+	var url = "test/test.scml";
+	//var url = "rapido/rapido.scml";
 
 	info_div.innerHTML = "Loading...";
 	var data = new spriter.data();
@@ -93,6 +94,7 @@ var main = function ()
 		info_div.innerHTML = "Animation Name: " + pose.getAnimName();
 	});
 
+	//loada  new spriter
 	file_input_div.style.display = 'none';
 	var file_input = file_input_div.appendChild(document.createElement('input'));
 	file_input.type = 'file';
@@ -128,6 +130,7 @@ var main = function ()
 	}, 
 	false);
 
+	//load a new spriter by drag and drop
 	canvas_div.addEventListener('drop', function (e)
 	{
 		e.preventDefault();
@@ -224,18 +227,21 @@ var main = function ()
 	}, 
 	false);
 
+	//lugar de dibujo en 2d
 	var canvas_2d = canvas_div.appendChild(document.createElement('canvas'));
 	canvas_2d.style.border = '1px solid black';
 	canvas_2d.width = canvas_w;
 	canvas_2d.height = canvas_h;
 	var view_2d = new fo.view_2d(canvas_2d);
 
+	//lugar de dibujo en webgl
 	var canvas_gl = canvas_div.appendChild(document.createElement('canvas'));
 	canvas_gl.style.border = '1px solid black';
 	canvas_gl.width = canvas_w;
 	canvas_gl.height = canvas_h;
 	var view_gl = new fo.view_gl(canvas_gl);
 
+	//scala de tiempo
 	var time_scale = 0.25;
 
 	var slider_label = control_div.appendChild(document.createElement('span'));
@@ -255,6 +261,8 @@ var main = function ()
 	}, 
 	false);
 
+
+	//si necesitamos debug draw
 	var debug_draw = false;
 
 	var checkbox = control_div.appendChild(document.createElement('input'));
@@ -268,6 +276,7 @@ var main = function ()
 	}, 
 	false);
 
+	//we call this every loop, this updates the pos, also moves to the next animation
 	var update = function (tick)
 	{
 		var anim_time = tick.elapsed_time * time_scale;
@@ -289,6 +298,7 @@ var main = function ()
 		pose.update(anim_time);
 	}
 
+	//dibujamos en canvas 2d sin usar webgl
 	var draw_2d = function ()
 	{
 		var ctx_2d = view_2d.ctx_2d;
@@ -330,6 +340,7 @@ var main = function ()
 		}
 	}
 
+	//dibujamos en webgl
 	var draw_gl = function ()
 	{
 		var ctx_gl = view_gl.ctx_gl;
@@ -351,6 +362,8 @@ var main = function ()
 		}
 	}
 
+
+	//aqui hacemos el main loop donde llamamos todo
 	var tick = new Object();
 	tick.frame = 0;
 	tick.time = 0;

@@ -128,7 +128,38 @@ spriter.tween = function (a, b, t)
  */
 spriter.tweenAngle = function (a, b, t, spin)
 {
-	if ((spin > 0) && (a > b))
+	//alert("a"+a);
+	/*var rad = a * Math.PI / 180;
+	//var rc = Math.cos(rad)
+	var rs = Math.sin(rad);
+	a = (Math.asin(rs)*180)/Math.PI;*/
+
+	/*alert("b"+b);
+	var rad2 = b * Math.PI / 180;
+	//var rc = Math.cos(rad)
+	var rs2 = Math.sin(rad2);
+
+	b = (Math.asin(rs2)*180)/Math.PI;
+	alert("b"+b);*/
+
+	while (a < 0)
+	{
+		a+=360;
+	}
+	while (a > 360)
+	{
+		a-=360;
+	}
+	while (b < 0)
+	{
+		b+=360;
+	}
+	while (b > 360)
+	{
+		b-=360;
+	}
+
+	if ((spin >= 0) && (a > b))
 	{
 		return a + ((b + 360 - a) * t); // counter clockwise
 	}
@@ -149,6 +180,10 @@ spriter.combineParent = function (bone, parent_bone)
 	bone.x *= parent_bone.scale_x;
 	bone.y *= parent_bone.scale_y;
 
+	/*if (parent_bone.angle > 360)
+	{
+		parent_bone.angle = parent_bone.angle - 360
+	}*/
 	var rad = parent_bone.angle * Math.PI / 180;
 	var rc = Math.cos(rad), rs = Math.sin(rad);
 	var tx = bone.x, ty = bone.y;
