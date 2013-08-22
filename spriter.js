@@ -141,23 +141,38 @@ spriter.tweenAngle = function (a, b, t, spin)
 
 	b = (Math.asin(rs2)*180)/Math.PI;
 	alert("b"+b);*/
-
+    var change_spin = false;
 	while (a < 0)
 	{
 		a+=360;
+        change_spin = true;
 	}
 	while (a > 360)
 	{
 		a-=360;
+        change_spin = true;
 	}
 	while (b < 0)
 	{
 		b+=360;
+        change_spin = true;
 	}
 	while (b > 360)
 	{
 		b-=360;
+        change_spin = true;
 	}
+    if (change_spin)
+    {
+        if (spin >= 0)
+        {
+            spin = -1;
+        }
+        else
+        {
+            spin = 0;
+        }
+    }
 
 	if ((spin >= 0) && (a > b))
 	{
