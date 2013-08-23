@@ -113,7 +113,7 @@ spriter_animation.prototype.draw_2d = function()
 
 	if (ctx_2d)
 	{
-		ctx_2d.clearRect(0, 0, ctx_2d.canvas.width, ctx_2d.canvas.height);
+		//ctx_2d.clearRect(0, 0, ctx_2d.canvas.width, ctx_2d.canvas.height);
 
 		ctx_2d.save();
 
@@ -155,8 +155,6 @@ spriter_animation.prototype.draw_gl = function()
 
 	if (ctx_gl)
 	{
-		ctx_gl.clear(ctx_gl.COLOR_BUFFER_BIT | ctx_gl.DEPTH_BUFFER_BIT);
-
 		// apply camera
 		var camera_mtx = new fo.m3x2();
 		camera_mtx.selfScale(1 / this.camera_scale, 1 / this.camera_scale);
@@ -166,8 +164,6 @@ spriter_animation.prototype.draw_gl = function()
 		this.draw_canvas.load_camera_mtx(camera_mtx);
 
 		this.draw_canvas.draw_pose_gl(this.pose);
-
-		ctx_gl.flush();
 	}
 }
 

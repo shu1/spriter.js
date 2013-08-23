@@ -51,14 +51,7 @@ var main = function ()
 	canvas_2d.height = canvas_h;
 	var view_2d = new fo.view_2d(canvas_2d);
 
-	//Draw on webgl
-	/*var canvas_gl = canvas_div.appendChild(document.createElement('canvas'));
-	canvas_gl.style.border = '1px solid black';
-	canvas_gl.width = canvas_w;
-	canvas_gl.height = canvas_h;
-	var view_gl = new fo.view_gl(canvas_gl);*/
-
-	//Time sacle
+	//Time scale
 	var time_scale = 1.0;
 
 	var slider_label = control_div.appendChild(document.createElement('span'));
@@ -94,7 +87,7 @@ var main = function ()
 	false);
 
 	var anim_a = new spriter_animation("test/test.scml", view_2d, false);//2d
-	//var anim_a = new spriter_animation("test/test.scml", view_gl, true); //webgl
+	var anim_b = new spriter_animation("rapido/rapido.scml", view_2d, false);//2d
 
 	//aqui hacemos el main loop donde llamamos todo
 	var tick = new Object();
@@ -113,10 +106,20 @@ var main = function ()
 		tick.elapsed_time = Math.min(tick.time - tick.time_last, 50);
 
 		anim_a.update(tick);
+		anim_b.update(tick);
 
 		tick.time_last = time;
 
-		anim_a.draw();
+		//draw 2d
+		var ctx_2d = view_2d.ctx_2d;
+
+		if (ctx_2d)
+		{
+			ctx_2d.clearRect(0, 0, ctx_2d.canvas.width, ctx_2d.canvas.height);
+
+			anim_a.draw();
+			anim_b.draw();
+		}
 	}
 
 	loop(tick.time_last);
