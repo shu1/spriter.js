@@ -135,7 +135,8 @@ fo.view_2d.prototype.debug_draw_pose_2d = function (pose)
  * @return {void} 
  * @param {spriter.pose} pose 
  */
-fo.view_2d.prototype.draw_pose_2d = function (pose)
+
+fo.view_2d.prototype.draw_pose_2d = function (pose, pos_data)
 {
 	var ctx_2d = this.ctx_2d;
 
@@ -153,10 +154,17 @@ fo.view_2d.prototype.draw_pose_2d = function (pose)
 
 			ctx_2d.save();
 
+				var angle_rads = (pos_data.angle*pos_data.flip) * Math.PI / 180;
+				var scale_x = pos_data.scale_x*pos_data.flip;
+				var scale_y = pos_data.scale_y;
+				var pos_x = pos_data.pos_x;
+				var pos_y = pos_data.pos_y;
+				var object_x = Math.cos(angle_rads) * (object.x - object.pivot_x) - Math.sin(angle_rads) * (object.y-object.pivot_y) + object.pivot_x;
+				var object_y = Math.sin(angle_rads) * (object.x - object.pivot_x) + Math.cos(angle_rads) * (object.y-object.pivot_y) + object.pivot_y;
 				// apply object transform
-				ctx_2d.translate(object.x, object.y);
-				ctx_2d.rotate(object.angle * Math.PI / 180);
-				ctx_2d.scale(object.scale_x, object.scale_y);
+				ctx_2d.translate(object_x*scale_x+pos_x, object_y*scale_y-pos_y);
+				ctx_2d.rotate((object.angle*pos_data.flip * Math.PI / 180) + angle_rads);
+				ctx_2d.scale(object.scale_x*scale_x, object.scale_y*scale_y);
 
 				// image extents
 				var ex = 0.5 * file.width;

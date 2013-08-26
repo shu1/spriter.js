@@ -73,6 +73,8 @@ var main = function ()
 
 	var anim_a = new spriter_animation("test/test.scml", view_gl, true);//webgl
 	var anim_b = new spriter_animation("rapido/rapido.scml", view_gl, true);//webgl
+	//anim_b.scale_x = 0.3;
+	//anim_b.scale_y = 0.3;
 
 	//aqui hacemos el main loop donde llamamos todo
 	var tick = new Object();

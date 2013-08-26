@@ -33,7 +33,7 @@ spriter_animation handles the sprites positions, draw, zoom,update and rotation 
 // Add methods like this.  All Person objects will be able to invoke this
 spriter_animation.prototype.set_camera = function()
 {
-	var extent = get_pose_extent(this.pose);
+	/*var extent = get_pose_extent(this.pose);
 	for (var i = 0, ict = this.pose.getNumAnims(); i < ict; ++i)
 	{
 		this.pose.setAnim(i);
@@ -43,15 +43,15 @@ spriter_animation.prototype.set_camera = function()
 			this.pose.setKey(k);
 			extent = get_pose_extent(this.pose, extent);
 		}
-	}
+	}*/
 	this.pose.setAnim(0);
-	this.camera_x = (extent.max.x + extent.min.x) / 2;
-	this.camera_y = (extent.max.y + extent.min.y) / 2;
-	var scale_x = this.canvas_w / (extent.max.x - extent.min.x);
-	var scale_y = this.canvas_h / (extent.max.y - extent.min.y);
-	this.camera_scale = 1 / Math.min(scale_x, scale_y);
-	this.camera_scale *= 1.1;
-	//camera_scale = 1;
+	//this.camera_x = (extent.max.x + extent.min.x) / 2;
+	//this.camera_y = (extent.max.y + extent.min.y) / 2;
+	//var scale_x = this.canvas_w / (extent.max.x - extent.min.x);
+	//var scale_y = this.canvas_h / (extent.max.y - extent.min.y);
+	//this.camera_scale = 1 / Math.min(scale_x, scale_y);
+	//this.camera_scale *= 1.1;
+	camera_scale = 1;
 }
 
 function spriter_animation(url, draw_canvas, is_gl)
@@ -59,10 +59,15 @@ function spriter_animation(url, draw_canvas, is_gl)
 	this.url = url;
 	this.draw_canvas = draw_canvas;
 	this.is_gl = is_gl;
-	this.camera_x = 0;
-	this.camera_y = 0;
-	this.camera_angle = 0;
-	this.camera_scale = 1;
+	
+	this.pos_data =new Object();;
+	this.pos_data.pos_x = 0;
+	this.pos_data.pos_y = 0;
+	this.pos_data.scale_x = 1;
+	this.pos_data.scale_y = 1;
+	this.pos_data.angle = 0;
+    this.pos_data.flip = 1;
+
 	this.canvas_w = 640;
 	this.canvas_h = 480;
 	this.debug_draw = false;
@@ -76,14 +81,73 @@ function spriter_animation(url, draw_canvas, is_gl)
 	var url = this.url;
 	//var url = "rapido/rapido.scml";
 
-	info_div.innerHTML = "Loading...";
+	//info_div.innerHTML = "Loading...";
 	var data = new spriter.data();
 	data.loadFromURL(url, function (anim)
 	{
 		anim.pose = new spriter.pose(data);
 		anim.set_camera(anim.pose);
-		info_div.innerHTML = "Animation Name: " + anim.pose.getAnimName();
+		//info_div.innerHTML = "Animation Name: " + anim.pose.getAnimName();
 	},this);
+}
+
+spriter_animation.prototype.set_scale= function(scale_x, scale_y)
+{
+	this.pos_data.scale_x = scale_x;
+	this.pos_data.scale_y = scale_y;
+}
+
+spriter_animation.prototype.set_position= function(pos_x, pos_y)
+{
+	this.pos_data.pos_x = pos_x;
+	this.pos_data.pos_y = pos_y;
+}
+
+spriter_animation.prototype.set_rotation= function(rotation)
+{
+	this.pos_data.angle = rotation;
+}
+
+spriter_animation.prototype.get_rotation= function()
+{
+	return this.pos_data.angle;
+}
+
+spriter_animation.prototype.get_x = function()
+{
+	return this.pos_data.pos_x;
+}
+
+spriter_animation.prototype.get_y = function()
+{
+	return this.pos_data.pos_y;
+}
+
+spriter_animation.prototype.get_scale_x = function()
+{
+	return this.pos_data.scale_x;
+}
+
+spriter_animation.prototype.get_scale_y = function()
+{
+	return this.pos_data.scale_y;
+}
+
+spriter_animation.prototype.flip = function(flip)
+{
+    if (flip != null)
+    {
+        this.pos_data.flip = flip;
+        return;
+    }
+    if (this.pos_data.flip == 1)
+    {
+        this.pos_data.flip = -1;
+    }
+    else
+    {
+        this.pos_data.flip = 1;
+    }
 }
 
 spriter_animation.prototype.update = function(tick)
@@ -95,12 +159,12 @@ spriter_animation.prototype.update = function(tick)
 			if ((this.pose.getTime() + anim_time) < 0)
 			{
 				this.pose.setPrevAnim();
-				info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
+				//info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
 			}
 			if ((this.pose.getTime() + anim_time) >= this.pose.getAnimLength())
 			{
 				this.pose.setNextAnim();
-				info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
+				//info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
 			}
 		}
 
@@ -118,13 +182,8 @@ spriter_animation.prototype.draw_2d = function()
 		ctx_2d.save();
 
 			// 0,0 at center, x right, y up
-			ctx_2d.translate(ctx_2d.canvas.width / 2, ctx_2d.canvas.height / 2);
+			//ctx_2d.translate(ctx_2d.canvas.width / 2, ctx_2d.canvas.height / 2);
 			ctx_2d.scale(1, -1);
-
-			// apply camera
-			ctx_2d.scale(1 / this.camera_scale, 1 / this.camera_scale);
-			ctx_2d.rotate(-this.camera_angle * Math.PI / 180);
-			ctx_2d.translate(-(this.camera_x), -this.camera_y);
 
 
 			if (this.debug_draw)
@@ -142,7 +201,7 @@ spriter_animation.prototype.draw_2d = function()
 			}
 			else
 			{
-				this.draw_canvas.draw_pose_2d(this.pose);
+				this.draw_canvas.draw_pose_2d(this.pose,this.pos_data);
 			}
 
 		ctx_2d.restore();
@@ -157,16 +216,15 @@ spriter_animation.prototype.draw_gl = function()
 	{
 		// apply camera
 		var camera_mtx = new fo.m3x2();
-		camera_mtx.selfScale(1 / this.camera_scale, 1 / this.camera_scale);
-		camera_mtx.selfRotateDegrees(-this.camera_angle);
-		camera_mtx.selfTranslate(-this.camera_x, -this.camera_y);
+		//camera_mtx.selfScale(1 / this.camera_scale, 1 / this.camera_scale);
+		//camera_mtx.selfRotateDegrees(-this.camera_angle);
+		//camera_mtx.selfTranslate(-this.camera_x, -this.camera_y);
 		
 		this.draw_canvas.load_camera_mtx(camera_mtx);
 
 		this.draw_canvas.draw_pose_gl(this.pose);
 	}
 }
-
 
 spriter_animation.prototype.draw = function()
 {

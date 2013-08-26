@@ -87,7 +87,12 @@ var main = function ()
 	false);
 
 	var anim_a = new spriter_animation("test/test.scml", view_2d, false);//2d
+	anim_a.set_position(320,240);
+	anim_a.flip();
+
 	var anim_b = new spriter_animation("rapido/rapido.scml", view_2d, false);//2d
+	anim_b.set_scale(0.3,0.3);
+	anim_b.set_position(320,240);
 
 	//aqui hacemos el main loop donde llamamos todo
 	var tick = new Object();
@@ -107,6 +112,8 @@ var main = function ()
 
 		anim_a.update(tick);
 		anim_b.update(tick);
+
+		anim_b.set_rotation(anim_b.get_rotation()+1);
 
 		tick.time_last = time;
 
