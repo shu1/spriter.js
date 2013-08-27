@@ -911,7 +911,6 @@ spriter.data.prototype.loadFromURL = function (url, callback, object)
 		that.parseSCML(req.responseText);
 
 		// load texture files from url
-
 		that.prepareImages(url, inc_count, dec_count);
 
 		dec_count(); // url
@@ -1378,6 +1377,22 @@ spriter.pose.prototype.setAnim = function (anim_id)
 }
 
 /**
+ * @return {string} 
+ * @param {number} entity_index 
+ * @param {number} anim_index 
+ */
+spriter.pose.prototype.getAnimNames = function ()
+{
+	var names = [];
+	// set animation by name
+	for (var anim_idx = 0, anim_len = this.getNumAnims(); anim_idx < anim_len; ++anim_idx)
+	{
+		names.push(this.getAnimName(anim_idx));
+	}
+	return names;
+}
+
+/**
  * @return {void}
  */
 spriter.pose.prototype.setNextAnim = function ()
@@ -1407,8 +1422,11 @@ spriter.pose.prototype.setPrevAnim = function ()
  */
 spriter.pose.prototype.getAnimName = function (anim_index)
 {
+	if (anim_index === undefined)
+	{
+		anim_index = this.m_anim_index;
+	}
 	var entity_index = this.m_entity_index;
-	anim_index = (anim_index !== undefined)?(anim_index):(this.m_anim_index);
 	if (this.m_data)
 	{
 		return this.m_data.getAnimName(entity_index, anim_index);
@@ -1533,6 +1551,11 @@ spriter.pose.prototype.setKey = function (key_index)
 		this.m_time = this.getAnimKeyTime(this.m_anim_index, key_index);
 		this.m_dirty = true;
 	}
+}
+
+spriter.pose.prototype.setLooping = function (loop)
+{
+	this.isLooping = loop;
 }
 
 /**

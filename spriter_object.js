@@ -31,26 +31,9 @@ spriter_animation handles the sprites positions, draw, zoom,update and rotation 
 
 
 // Add methods like this.  All Person objects will be able to invoke this
-spriter_animation.prototype.set_camera = function()
+spriter_animation.prototype.set_camera = function ()
 {
-	/*var extent = get_pose_extent(this.pose);
-	for (var i = 0, ict = this.pose.getNumAnims(); i < ict; ++i)
-	{
-		this.pose.setAnim(i);
-		// get extent for each keyframe
-		for (var k = 0, kct = this.pose.getNumAnimKeys(); k < kct; ++k)
-		{
-			this.pose.setKey(k);
-			extent = get_pose_extent(this.pose, extent);
-		}
-	}*/
 	this.pose.setAnim(0);
-	//this.camera_x = (extent.max.x + extent.min.x) / 2;
-	//this.camera_y = (extent.max.y + extent.min.y) / 2;
-	//var scale_x = this.canvas_w / (extent.max.x - extent.min.x);
-	//var scale_y = this.canvas_h / (extent.max.y - extent.min.y);
-	//this.camera_scale = 1 / Math.min(scale_x, scale_y);
-	//this.camera_scale *= 1.1;
 	camera_scale = 1;
 }
 
@@ -67,13 +50,15 @@ function spriter_animation(url, draw_canvas, is_gl)
 	this.pos_data.scale_y = 1;
 	this.pos_data.angle = 0;
     this.pos_data.flip = 1;
+    this.loop = true;
 
 	this.canvas_w = 640;
 	this.canvas_h = 480;
 	this.debug_draw = false;
 	this.time_scale = 1.0;
 	this.info_div = document.getElementById("info_div");
-
+	this.data_loaded = false;
+	this.on_finish_change = undefined;
 
 	//We load spriter animation
 	this.pose = new spriter.pose();
@@ -87,6 +72,7 @@ function spriter_animation(url, draw_canvas, is_gl)
 	{
 		anim.pose = new spriter.pose(data);
 		anim.set_camera(anim.pose);
+		anim.data_loaded = true;
 		//info_div.innerHTML = "Animation Name: " + anim.pose.getAnimName();
 	},this);
 }
@@ -149,26 +135,52 @@ spriter_animation.prototype.flip = function(flip)
         this.pos_data.flip = 1;
     }
 }
+spriter_animation.prototype.setLooping = function(loop)
+{
+	this.loop = loop;
+}
+
+//Can be used for name or id
+spriter_animation.prototype.onFinishAnimSetAnim = function (anim_id)
+{
+	this.on_finish_change = anim_id;
+}
+
+//Can be used for name or id
+spriter_animation.prototype.setAnim = function (anim_id)
+{
+	this.pose.setAnim(anim_id);
+}
+
+//Can be used for name or id
+spriter_animation.prototype.getAnimNames = function ()
+{
+	return this.pose.getAnimNames();
+}
 
 spriter_animation.prototype.update = function(tick)
 {
-		var anim_time = tick.elapsed_time * this.time_scale;
+	if (this.data_loaded == false)
+	{
+		return;
+	}
+	var anim_time = tick.elapsed_time * this.time_scale;
 
-		if (this.pose.getNumAnims() > 1)
-		{
-			if ((this.pose.getTime() + anim_time) < 0)
-			{
-				this.pose.setPrevAnim();
-				//info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
-			}
-			if ((this.pose.getTime() + anim_time) >= this.pose.getAnimLength())
-			{
-				this.pose.setNextAnim();
-				//info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
-			}
-		}
+	//
+	/*if ((this.pose.getTime() + anim_time) < 0)
+	{
+		this.pose.setPrevAnim();
+		//info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
+	}*/
+	//finish current animation
+	if (this.on_finish_change != undefined &&(this.pose.getTime() + anim_time) >= this.pose.getAnimLength())
+	{
+		this.setAnim(this.on_finish_change);
+		this.on_finish_change = undefined;
+	}
 
-		this.pose.update(anim_time);
+	this.pose.setLooping(this.loop);
+	this.pose.update(anim_time);
 }
 
 spriter_animation.prototype.draw_2d = function()

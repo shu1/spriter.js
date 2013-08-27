@@ -89,6 +89,8 @@ var main = function ()
 	var anim_a = new spriter_animation("test/test.scml", view_2d, false);//2d
 	anim_a.set_position(320,240);
 	anim_a.flip();
+	anim_a.setLooping(false);
+	anim_a.onFinishAnimSetAnim("idle");
 
 	var anim_b = new spriter_animation("rapido/rapido.scml", view_2d, false);//2d
 	anim_b.set_scale(0.3,0.3);
@@ -103,6 +105,7 @@ var main = function ()
 
 	var loop = function (time)
 	{
+
 		window.requestAnimationFrame(loop, null);
 
 		++tick.frame;
@@ -112,8 +115,10 @@ var main = function ()
 
 		anim_a.update(tick);
 		anim_b.update(tick);
-
-		anim_b.set_rotation(anim_b.get_rotation()+1);
+		if (anim_b.data_loaded == true)
+		{
+			anim_b.set_rotation(anim_b.get_rotation()+1);
+		}
 
 		tick.time_last = time;
 
