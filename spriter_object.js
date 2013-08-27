@@ -59,6 +59,9 @@ function spriter_animation(url, draw_canvas, is_gl)
 	this.info_div = document.getElementById("info_div");
 	this.data_loaded = false;
 	this.on_finish_change = undefined;
+	this.on_finish_callback = undefined;
+	this.on_loop_callback = undefined;
+	this.on_finish_callback_again = true;
 
 	//We load spriter animation
 	this.pose = new spriter.pose();
@@ -135,6 +138,7 @@ spriter_animation.prototype.flip = function(flip)
         this.pos_data.flip = 1;
     }
 }
+
 spriter_animation.prototype.setLooping = function(loop)
 {
 	this.loop = loop;
@@ -158,6 +162,31 @@ spriter_animation.prototype.getAnimNames = function ()
 	return this.pose.getAnimNames();
 }
 
+//Can be used for name or id
+/*
+@call_again call everytime the loop finished or call just once: defaults true
+@callback the function to call when the animation finished
+*/
+spriter_animation.prototype.onFinishAnimCallback= function (call_again, callback)
+{
+	if (call_again == undefined)
+	{
+		call_again = true;
+	}
+	this.on_finish_callback = callback;
+	this.on_finish_callback_again = call_again;
+}
+
+//Can be used for name or id
+/*
+@call_again call everytime the loop finished or call just once: defaults true
+@callback the function to call when the animation finished
+*/
+spriter_animation.prototype.onLoopAnimCallback= function (callback)
+{
+	this.on_loop_callback = callback;
+}
+
 spriter_animation.prototype.update = function(tick)
 {
 	if (this.data_loaded == false)
@@ -173,10 +202,27 @@ spriter_animation.prototype.update = function(tick)
 		//info_div.innerHTML = "Animation Name: " + this.pose.getAnimName();
 	}*/
 	//finish current animation
-	if (this.on_finish_change != undefined &&(this.pose.getTime() + anim_time) >= this.pose.getAnimLength())
+	if ((this.pose.getTime() + anim_time) >= this.pose.getAnimLength())
 	{
-		this.setAnim(this.on_finish_change);
-		this.on_finish_change = undefined;
+		//change to aimation when finishes
+		if (this.on_finish_change != undefined)
+		{
+			this.setAnim(this.on_finish_change);
+			this.on_finish_change = undefined;
+		}
+		//callback
+		if (this.on_finish_callback != undefined)
+		{
+			this.on_finish_callback.call();
+			if (this.on_finish_callback_again == false)
+			{
+				this.on_finish_callback = undefined;
+			}
+		}
+		if (this.on_loop_callback != undefined)
+		{
+			this.on_loop_callback.call();
+		}
 	}
 
 	this.pose.setLooping(this.loop);

@@ -91,6 +91,7 @@ var main = function ()
 	anim_a.flip();
 	anim_a.setLooping(false);
 	anim_a.onFinishAnimSetAnim("idle");
+	anim_a.onFinishAnimCallback(false,function(){alert("test")});	
 
 	var anim_b = new spriter_animation("rapido/rapido.scml", view_2d, false);//2d
 	anim_b.set_scale(0.3,0.3);
