@@ -60,8 +60,11 @@ function spriter_animation(url, draw_canvas, is_gl)
 	this.data_loaded = false;
 	this.on_finish_change = undefined;
 	this.on_finish_callback = undefined;
-	this.on_loop_callback = undefined;
 	this.on_finish_callback_again = true;
+	this.on_loop_callback = undefined;
+	this.on_changes_callback = undefined;
+	this.on_load_callback = undefined;
+
 
 	//We load spriter animation
 	this.pose = new spriter.pose();
@@ -76,6 +79,10 @@ function spriter_animation(url, draw_canvas, is_gl)
 		anim.pose = new spriter.pose(data);
 		anim.set_camera(anim.pose);
 		anim.data_loaded = true;
+		if (this.on_load_callback != undefined)
+		{
+			this.on_load_callback.call();
+		}
 		//info_div.innerHTML = "Animation Name: " + anim.pose.getAnimName();
 	},this);
 }
@@ -154,6 +161,10 @@ spriter_animation.prototype.onFinishAnimSetAnim = function (anim_id)
 spriter_animation.prototype.setAnim = function (anim_id)
 {
 	this.pose.setAnim(anim_id);
+	if (this.on_changes_callback != undefined)
+	{
+		this.on_changes_callback.call(anim_id);
+	}
 }
 
 //Can be used for name or id
@@ -185,6 +196,19 @@ spriter_animation.prototype.onFinishAnimCallback= function (call_again, callback
 spriter_animation.prototype.onLoopAnimCallback= function (callback)
 {
 	this.on_loop_callback = callback;
+}
+
+
+//When animation changes call this funcion (parameter is animID)
+spriter_animation.prototype.onAnimChangesCallback= function (callback)
+{
+	this.on_changes_callback = callback;
+}
+
+//When we load everything
+spriter_animation.prototype.onLoadCallback= function (callback)
+{
+	this.on_load_callback = callback;
 }
 
 spriter_animation.prototype.update = function(tick)
