@@ -30,6 +30,9 @@
 /**
  * A JavaScript API for the Spriter SCML animation data format.
  */
+
+"use strict";
+
 var spriter = spriter || {};
 
 /**
@@ -128,38 +131,38 @@ spriter.tween = function (a, b, t)
  */
 spriter.tweenAngle = function (a, b, t, spin)
 {
-    var change_spin = false;
+	var change_spin = false;
 	while (a < 0)
 	{
 		a+=360;
-        change_spin = true;
+		change_spin = true;
 	}
 	while (a > 360)
 	{
 		a-=360;
-        change_spin = true;
+		change_spin = true;
 	}
 	while (b < 0)
 	{
 		b+=360;
-        change_spin = true;
+		change_spin = true;
 	}
 	while (b > 360)
 	{
 		b-=360;
-        change_spin = true;
+		change_spin = true;
 	}
-    if (change_spin)
-    {
-        if (spin >= 0)
-        {
-            spin = -1;
-        }
-        else
-        {
-            spin = 0;
-        }
-    }
+	if (change_spin)
+	{
+		if (spin >= 0)
+		{
+			spin = -1;
+		}
+		else
+		{
+			spin = 0;
+		}
+	}
 
 	if ((spin >= 0) && (a > b))
 	{
@@ -827,6 +830,7 @@ spriter.data.prototype.parseSCML = function (scml)
 	var dom_parser = new DOMParser();
 	var xml_object = dom_parser.parseFromString(scml, "text/xml");
 	var json_string = xml2json(xml_object, "  ");
+	saveJson(json_string);	// saves json to file
 	var json = /** @type {Object} */ window.JSON.parse(json_string);
 	if (json.spriter_data)
 	{
