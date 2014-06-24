@@ -28,10 +28,69 @@
  * @return {void}
  */
 var main = function() {
-	var canvas_2d = document.body.appendChild(document.createElement('canvas'));
+	var file_input_div = document.body.appendChild(document.createElement('div'));
+	var canvas_div = document.body.appendChild(document.createElement('div'));
+	var info_div = document.body.appendChild(document.createElement('div'));
+	canvas_div.style.display = 'inline-block';
+	info_div.innerHTML = "Animation Name: ";
+
+	var file_input = file_input_div.appendChild(document.createElement('input'));
+	file_input.type = 'file';
+	file_input.directory = file_input.webkitdirectory = "directory";
+	var file_label = file_input_div.appendChild(document.createElement('span'));
+	file_label.innerHTML = "Drag SCML file parent directory to the file input.";
+	file_input.addEventListener('change', function(e) {
+		var input_files = e.target.files;
+
+		for (var input_file_idx = 0, input_files_len = input_files.length; input_file_idx < input_files_len; ++input_file_idx) {
+			var input_file = input_files[input_file_idx];
+			var ext = input_file.name.split('.').pop();
+			if (ext.toLowerCase() != 'scml') {
+				continue;
+			}
+
+			file_label.innerHTML = input_file.name;
+			info_div.innerHTML = "Loading...";
+			var data = new spriter.data();
+			data.loadFromFileList(input_file, input_files, (function(data) { return function() {
+				var pose = new spriter.pose(data);
+//				set_camera(pose);
+				info_div.innerHTML = "Animation Name: " + pose.getAnimName();
+			}})(data));
+			break;
+		}
+	});
+
+	canvas_div.addEventListener("dragover", function(e){e.preventDefault()});
+	canvas_div.addEventListener("drop", function(e) {
+		e.preventDefault();
+		var items = e.dataTransfer.items;
+		for (var i = 0, ct = items.length; i < ct; ++i) {
+			var entry = items[i].webkitGetAsEntry();
+			if (!entry.isFile) {
+				continue;
+			}
+			var ext = entry.name.split('.').pop();
+			if (ext.toLowerCase() != 'scml') {
+				continue;
+			}
+
+			file_label.innerHTML = entry.name;
+			info_div.innerHTML = "Loading...";
+			var data = new spriter.data();
+			data.loadFromFileEntry(entry, (function(data) { return function() {
+				var pose = new spriter.pose(data);
+//				set_camera(pose);
+				info_div.innerHTML = "Animation Name: " + pose.getAnimName();
+			}})(data));
+			break;
+		}
+	});
+
+	var canvas_2d = canvas_div.appendChild(document.createElement('canvas'));
 	canvas_2d.style.border = '1px solid black';
-	canvas_2d.width = window.innerWidth;
-	canvas_2d.height = window.innerHeight;
+	canvas_2d.width = window.innerWidth-10;
+	canvas_2d.height = window.innerHeight-62;
 	var view_2d = new fo.view_2d(canvas_2d);
 
 	var anim_a = new spriter_animation("test/test.scml", view_2d, anim_a_data);
