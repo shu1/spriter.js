@@ -25,11 +25,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
 
+"use strict";
+
 /*
 spriter_animation handles the sprites positions, draw, zoom, update and rotation of a spriter object
 */
-
-"use strict";
 
 // Add methods like this.  All Person objects will be able to invoke this
 spriter_animation.prototype.set_camera = function() {

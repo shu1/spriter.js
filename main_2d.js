@@ -24,6 +24,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
 
+"use strict";
+
 /**
  * @return {void}
  */
@@ -44,8 +46,8 @@ var main = function() {
 
 		for (var input_file_idx = 0, input_files_len = input_files.length; input_file_idx < input_files_len; ++input_file_idx) {
 			var input_file = input_files[input_file_idx];
-			var ext = input_file.name.split('.').pop();
-			if (ext.toLowerCase() != 'scml') {
+			var filename = input_file.name.split('.');
+			if (filename[1].toLowerCase() != 'scml') {
 				continue;
 			}
 
@@ -56,7 +58,7 @@ var main = function() {
 				var pose = new spriter.pose(data);
 //				set_camera(pose);
 				info_div.innerHTML = "Animation Name: " + pose.getAnimName();
-			}})(data));
+			}})(data), filename[0]);
 			break;
 		}
 	});
@@ -70,8 +72,8 @@ var main = function() {
 			if (!entry.isFile) {
 				continue;
 			}
-			var ext = entry.name.split('.').pop();
-			if (ext.toLowerCase() != 'scml') {
+			var filename = entry.name.split('.');
+			if (filename[1].toLowerCase() != 'scml') {
 				continue;
 			}
 
@@ -82,7 +84,7 @@ var main = function() {
 				var pose = new spriter.pose(data);
 //				set_camera(pose);
 				info_div.innerHTML = "Animation Name: " + pose.getAnimName();
-			}})(data));
+			}})(data), filename[0]);
 			break;
 		}
 	});
@@ -120,7 +122,7 @@ var main = function() {
 		anim_a.update(tick);
 		anim_b.update(tick);
 		if (anim_b.data_loaded == true) {
-			anim_b.set_rotation(anim_b.get_rotation()+1);
+			anim_b.set_rotation(anim_b.get_rotation()-1);
 		}
 
 		tick.time_last = time;

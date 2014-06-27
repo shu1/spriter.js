@@ -27,12 +27,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
 
+"use strict";
+
 /**
  * A JavaScript API for the Spriter SCML animation data format.
  */
-
-"use strict";
-
 var spriter = spriter || {};
 
 /**
@@ -825,12 +824,12 @@ spriter.data.prototype.load = function (json)
  * @return {void} 
  * @param {string} scml 
  */
-spriter.data.prototype.parseSCML = function (scml)
+spriter.data.prototype.parseSCML = function (scml, filename)
 {
 	var dom_parser = new DOMParser();
 	var xml_object = dom_parser.parseFromString(scml, "text/xml");
 	var json_string = xml2json(xml_object, "  ");
-	saveJson(json_string);	// saves json to file
+	saveJson(json_string, filename);	// saves json to file
 	var json = /** @type {Object} */ window.JSON.parse(json_string);
 	if (json.spriter_data)
 	{
@@ -933,7 +932,7 @@ spriter.data.prototype.loadFromURL = function (url, callback, object)
  * @param {FileList} input_files
  * @param {function()} callback
  */
-spriter.data.prototype.loadFromFileList = function (input_file, input_files, callback)
+spriter.data.prototype.loadFromFileList = function (input_file, input_files, callback, filename)
 {
 	var that = this;
 
@@ -946,7 +945,7 @@ spriter.data.prototype.loadFromFileList = function (input_file, input_files, cal
 	var file_reader = new FileReader();
 	file_reader.addEventListener('load', function (e)
 	{
-		that.parseSCML(e.target.result);
+		that.parseSCML(e.target.result, filename);
 
 		// load texture files from file list
 
@@ -1012,7 +1011,7 @@ spriter.data.prototype.loadFromFileList = function (input_file, input_files, cal
  * @param {FileEntry} entry
  * @param {function()} callback
  */
-spriter.data.prototype.loadFromFileEntry = function (entry, callback)
+spriter.data.prototype.loadFromFileEntry = function (entry, callback, filename)
 {
 	var that = this;
 
@@ -1027,7 +1026,7 @@ spriter.data.prototype.loadFromFileEntry = function (entry, callback)
 		var reader = new FileReader();
 		reader.addEventListener('load', function (e)
 		{
-			that.parseSCML(e.target.result);
+			that.parseSCML(e.target.result, filename);
 
 			// load textures from file entry filesystem root
 
