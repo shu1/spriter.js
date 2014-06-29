@@ -92,7 +92,7 @@ var main = function() {
 	var canvas_2d = canvas_div.appendChild(document.createElement('canvas'));
 	canvas_2d.style.border = '1px solid black';
 	canvas_2d.width = window.innerWidth-10;
-	canvas_2d.height = window.innerHeight-62;
+	canvas_2d.height = window.innerHeight-70;
 	var view_2d = new fo.view_2d(canvas_2d);
 
 	var anim_a = new spriter_animation("test/test.scml", view_2d, anim_a_data);
